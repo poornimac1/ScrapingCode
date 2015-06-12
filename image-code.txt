@@ -1,0 +1,116 @@
+//Image
+$author = $packtPageXpath->query('//a[@href[starts-with(., "/load/imagegallery") ]]/@href');
+$price=$author->item(0)->nodeValue;
+$packtPage3 = curlGet('http://www.99acres.com'.$price);
+$packtPageXpath3 = returnXPathObject($packtPage3);
+$author = $packtPageXpath3->query('//div[@id="gal_script"]');
+$price=$author->item(0)->nodeValue;
+$price=trim((string)$price);
+$a=explode(";",$price);
+//print_r ($a);
+$propid=$a[0];
+$propid=substr($propid,22);
+$propid=chop($propid,"'");
+echo "<br><br>XXXXXXXXXXXXXXX-----X2=----->".$propid."<br><br>";
+$objPHPExcel->getActiveSheet()->SetCellValue('A'.$s_count, $propid);
+//http://pics.99acres.com/image-gallery/serve-R17199778-2-FULLPHOTO
+$links = array();
+foreach ($a as $t){
+//echo $t."<br>";
+$x=strpos($t,'full_image_url:');
+if($x)
+$links[]=substr($t,$x);
+
+}
+$x=strpos($t,"'");
+
+$links2 = array();
+foreach ($links as $t){
+//echo $t."<br>";
+$x=strpos($t,"'");
+if($x){
+$x=$x+1;
+$t=substr($t,$x);
+$links2[]=chop($t,"'})");
+
+}
+
+}
+
+echo "<br>";echo "<br>";
+//print_r ($links2);
+//$objPHPExcel->getActiveSheet()->SetCellValue('A'.$s_count, $price);
+//$objPHPExcel->getActiveSheet()->SetCellValue('A'.$s_count, $price);
+//echo $price;
+echo "<br>";
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//$inc1=65;
+//$inc2=65;
+
+mkdir("C:/xampp/htdocs/webscrrp/".$s_count.",".$propid."--".$dir);
+foreach($links2 as $imageUrl){
+$imageUrl=urldecode($imageUrl);
+echo $imageUrl;
+// If file is an image
+if (getimagesize($imageUrl)) {
+$imageFile = curlGet($imageUrl); // Download image using cURL
+$name=explode("/",$imageUrl);
+if(sizeof($name)>0){
+$fname=$name[sizeof($name)-1];
+}
+
+echo "<br>"."<br>"."Size:".sizeof($name)."--------Name:".$fname;
+echo "<br>"."C:/xampp/htdocs/webscrrp/".$s_count.",".$propid."--".$dir."/".$fname."<br>";
+$file = fopen("C:/xampp/htdocs/webscrrp/".$s_count.",".$propid."--".$dir."/".$fname, 'w'); // Opening file handle
+fwrite($file, $imageFile); // Writing image file
+fclose($file); // Closing file handle
+/*
+$gdImage = imagecreatefromjpeg('temp.jpeg');
+$objDrawing = new PHPExcel_Worksheet_Drawing();
+$objDrawing->setName('PHPExcel logo');
+$objDrawing->setDescription('PHPExcel logo');
+$objDrawing->setImageResource($gdImage);
+$objDrawing->setRenderingFunction(PHPExcel_Worksheet_MemoryDrawing::RENDERING_JPEG);
+$objDrawing->setMimeType(PHPExcel_Worksheet_MemoryDrawing::MIMETYPE_DEFAULT);
+//$objDrawing->setHeight(150);
+//$objDrawing->setCoordinates('C1');
+//$objDrawing->setPath('./temp.jpeg');      // filesystem reference for the image file
+$objDrawing->setHeight(36);                 // sets the image height to 36px (overriding the actual image height); 
+$objDrawing->setCoordinates(chr($inc1).chr($inc2).$j);    // pins the top-left corner of the image to cell D24
+if($inc2==90){
+$inc1=$inc1+1;
+$inc2=65;
+}
+else
+$inc2=$inc2+1;
+$objDrawing->setOffsetX(10);                // pins the top left corner of the image at an offset of 10 points horizontally to the right of the top-left corner of the cell
+$objDrawing->setWorksheet($objPHPExcel->getActiveSheet());*/
+
+}
+else
+{echo "<br>"."<br>"."Not opening"."<br><br>";}
+}
+$n=1;
+while(1){
+$imageUrl="http://pics.99acres.com/image-gallery/serve-".$propid."-".$n."-FULLPHOTO";
+$imageUrl=urldecode($imageUrl);
+echo $imageUrl;
+// If file is an image
+if (getimagesize($imageUrl)) {
+$imageFile = curlGet($imageUrl); // Download image using cURL
+/*$name=explode("/",$imageUrl);
+if(sizeof($name)>0){
+$fname=$name[sizeof($name)-1];
+}*/
+//echo "<br>"."<br>"."Size:".sizeof($name)."--------Name:".$fname;
+//echo "<br>"."C:/xampp/htdocs/webscrrp/".$dir."/".$fname."<br>";
+$file = fopen("C:/xampp/htdocs/webscrrp/".$s_count.",".$propid."--".$dir."/".$n."BV.jpeg", 'w'); // Opening file handle
+fwrite($file, $imageFile); // Writing image file
+fclose($file); // Closing file handle
+$n++;
+
+}
+else
+break;
+}
